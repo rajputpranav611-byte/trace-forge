@@ -14,14 +14,14 @@ Investigations, hypotheses, and provenance are represented as directed relations
 
 ```mermaid
 graph TD
-    IncCurrent((:Incident {current})) -.->|TOPOLOGICAL DEPENDENCIES| Svc((:Service))
-    Svc <-.-|AFFECTS| IncHistorical((:Incident {historical}))
-    IncHistorical -->|RESOLVED_BY| RecAction((:RecoveryAction))
-    IncHistorical -->|HAS_RECOVERY_PROPOSAL| Proposal((:RecoveryProposal))
-    Proposal -->|RESULTED_IN| SimResult((:SimulationResult))
-    Inv((:Investigation)) -->|INVESTIGATES| IncHistorical
-    Inv -->|RANKS_HYPOTHESIS| Hyp((:Hypothesis))
-    Hyp -->|SUPPORTED_BY| Evi((:Evidence))
+    IncCurrent((Incident current)) --> Svc((Service))
+    Svc --> IncHistorical((Incident historical))
+    IncHistorical --> RecAction((RecoveryAction))
+    IncHistorical --> Proposal((RecoveryProposal))
+    Proposal --> SimResult((SimulationResult))
+    Inv((Investigation)) --> IncHistorical
+    Inv --> Hyp((Hypothesis))
+    Hyp --> Evi((Evidence))
 ```
 
 ### Node Attributes & Provenance
