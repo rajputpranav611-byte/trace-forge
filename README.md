@@ -13,13 +13,13 @@
 
 <!-- Replace with your actual screenshots. See the Screenshots section below. -->
 <p align="center">
-<img width="7660" height="5128" alt="trace-forge-seven vercel app_(High Res) (5)" src="https://github.com/user-attachments/assets/af2a2620-dd91-4e99-aeb6-2f5db595c876" />
+<img width="7680" height="4320" alt="trace-forge-seven vercel app_(High Res)" src="https://github.com/user-attachments/assets/24e9cfd0-4f29-45ca-bd7a-28a73d559c1a" />
 <img width="7660" height="6680" alt="trace-forge-seven vercel app_(High Res) (3)" src="https://github.com/user-attachments/assets/6a921463-9132-4186-80c9-96d7615fde97" />
 <img width="7660" height="6216" alt="trace-forge-seven vercel app_(High Res) (2)" src="https://github.com/user-attachments/assets/4c2893aa-5a28-4ed0-8b02-d763a06c0aab" />
 <img width="7660" height="5600" alt="trace-forge-seven vercel app_(High Res) (4)" src="https://github.com/user-attachments/assets/ffde9dab-c1f8-4bbc-8d6a-23b0f413ebab" />
 <img width="7680" height="4320" alt="trace-forge-seven vercel app_(High Res) (1)" src="https://github.com/user-attachments/assets/8b51f2b9-38ff-464c-9760-0ca22ff3bf45" />
-<img width="7680" height="4320" alt="trace-forge-seven vercel app_(High Res)" src="https://github.com/user-attachments/assets/24e9cfd0-4f29-45ca-bd7a-28a73d559c1a" />
 <img width="1536" height="1024" alt="TraceForge Graph Data Model Infographic" src="https://github.com/user-attachments/assets/913a95ec-5af7-4391-b64e-f80bc8432fb9" />
+<img width="7660" height="5128" alt="trace-forge-seven vercel app_(High Res) (5)" src="https://github.com/user-attachments/assets/af2a2620-dd91-4e99-aeb6-2f5db595c876" />
 </p>
 
 ## Overview
