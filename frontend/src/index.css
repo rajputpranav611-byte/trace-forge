@@ -1,0 +1,89 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: dark;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  /* Graphite Instrumentation Identity Tokens */
+  --bg-app: #0B0E0D;
+  --surface-elevated: #111614;
+  --surface-secondary: #171D19;
+  --surface-sunken: #070908;
+  --border-subtle: #232B26;
+  --border-focus: #344039;
+  --text-primary: #E9EDE5;
+  --text-secondary: #9AA69C;
+  --text-muted: #647067;
+
+  /* Specialized Signal Accents */
+  --signal-lime: #C8F169;       /* Key positive signal, verified selection, interactive focus */
+  --muted-mint: #72C6A0;        /* Inferred / observed telemetry, graph pathways */
+  --info-blue: #89B8D9;         /* Catalog identifiers, protocol metadata */
+  --warning-amber: #DDAA60;     /* Contradiction warnings, epistemic debt, cautions */
+  --critical-red: #EF7777;      /* Root cause, severed counterfactual, blocking debt */
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--bg-app);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+}
+
+/* Custom scrollbars for high data density consoles */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-app);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #232B26;
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #344039;
+}
+
+/* React Flow theme overrides for Graphite Instrumentation */
+.react-flow {
+  background-color: #070908 !important;
+}
+
+.react-flow__controls {
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6) !important;
+  border: 1px solid #232B26 !important;
+  border-radius: 6px !important;
+  overflow: hidden;
+  background: #111614 !important;
+}
+
+.react-flow__controls-button {
+  background: #111614 !important;
+  border-bottom: 1px solid #232B26 !important;
+  fill: #9AA69C !important;
+  color: #9AA69C !important;
+}
+
+.react-flow__controls-button:hover {
+  background: #171D19 !important;
+  fill: #E9EDE5 !important;
+}
+
+.react-flow__minimap {
+  background-color: #0B0E0D !important;
+  border: 1px solid #232B26 !important;
+  border-radius: 6px !important;
+}
