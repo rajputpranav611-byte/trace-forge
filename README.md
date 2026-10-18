@@ -1,468 +1,425 @@
 # TraceForge
-### Operational Incident Response & Topology Command Center
 
-**An AI-powered incident investigation platform that uses graph-connected context to trace dependencies, examine evidence, compare hypotheses, and simulate safer recovery decisions.**
+**Graph-powered incident investigation, evidence-backed hypotheses, and safe counterfactual simulation.**
 
-<p align="center">
-  <a href="https://trace-forge-seven.vercel.app/"><strong>🚀 Live Application</strong></a>
-  ·
-  <a href="https://traceforge-backend-6rtl.onrender.com/"><strong>⚙️ Backend API</strong></a>
-  ·
-  <a href="#architecture"><strong>🏗️ Architecture</strong></a>
-</p>
+TraceForge is an incident investigation command center built on **FalkorDB**. It models services, dependencies, deployments, alerts, metrics, runbooks, and investigation evidence as a property graph, then uses Cypher traversals to trace failure paths, measure blast radius, rank competing root-cause hypotheses, and test "what if" interventions on an isolated copy of the graph.
 
-<!-- Replace with your actual screenshots. See the Screenshots section below. -->
-<p align="center">
-<img width="7680" height="4320" alt="trace-forge-seven vercel app_(High Res)" src="https://github.com/user-attachments/assets/24e9cfd0-4f29-45ca-bd7a-28a73d559c1a" />
-<img width="7660" height="6680" alt="trace-forge-seven vercel app_(High Res) (3)" src="https://github.com/user-attachments/assets/6a921463-9132-4186-80c9-96d7615fde97" />
-<img width="7660" height="6216" alt="trace-forge-seven vercel app_(High Res) (2)" src="https://github.com/user-attachments/assets/4c2893aa-5a28-4ed0-8b02-d763a06c0aab" />
-<img width="7660" height="5600" alt="trace-forge-seven vercel app_(High Res) (4)" src="https://github.com/user-attachments/assets/ffde9dab-c1f8-4bbc-8d6a-23b0f413ebab" />
-<img width="7680" height="4320" alt="trace-forge-seven vercel app_(High Res) (1)" src="https://github.com/user-attachments/assets/8b51f2b9-38ff-464c-9760-0ca22ff3bf45" />
-<img width="1536" height="1024" alt="TraceForge Graph Data Model Infographic" src="https://github.com/user-attachments/assets/913a95ec-5af7-4391-b64e-f80bc8432fb9" />
-<img width="7660" height="5128" alt="trace-forge-seven vercel app_(High Res) (5)" src="https://github.com/user-attachments/assets/af2a2620-dd91-4e99-aeb6-2f5db595c876" />
-</p>
+Built for **WeMakeDevs × FalkorDB Graph Hacks 2026**.
 
-## Overview
+[Live Demo](https://trace-forge-seven.vercel.app/) · [Backend API](https://traceforge-backend-6rtl.onrender.com/) · [Demo Video](<DEMO_VIDEO_URL>) · [Technical Blog](<https://builder.aws.com/content/3KsNfutBPWj6TEccCCFmqBwlBn4/traceforge-building-a-graph-powered-incident-investigation-command-center-with-falkordb>)
 
-When a production incident occurs, engineers need more than an alert or a list of logs. They need to understand how services depend on one another, which components may be affected, what evidence supports competing explanations, and what could happen if a dependency or recovery action changes.
+---
 
-**TraceForge turns incident investigation into a graph-grounded workflow.**
+## The Problem
 
-Instead of treating every service, incident, alert, and hypothesis as an isolated record, TraceForge represents their relationships in FalkorDB. Its backend exposes graph operations through application services and MCP tools so an AI agent can gather relevant context and support explainable investigation.
+When an incident hits a system of interconnected services, engineers have to correlate alerts, metrics, recent deployments, and dependency relationships by hand. Dashboards show isolated signals; the *relationships* between them are what explain a failure.
 
-TraceForge is designed to distinguish three things:
+TraceForge makes those relationships the core of the investigation. Every hypothesis is tied to evidence in the graph, every blast-radius figure comes from a real traversal, and every proposed intervention can be simulated before anyone acts on it.
 
-- **Observed:** Data and evidence represented in the available graph.
-- **Inferred:** Hypotheses or conclusions derived from that evidence.
-- **Simulated:** Counterfactual outcomes produced by a graph intervention.
+## Key Features
 
-A simulated outcome is not proof that the same result will occur in production.
-
-## Live deployment
-
-| Component | URL |
-|---|---|
-| Frontend | https://trace-forge-seven.vercel.app |
-| Backend | https://traceforge-backend-6rtl.onrender.com|
-| API documentation | https://traceforge-backend-6rtl.onrender.com |
-
-The API documentation URL assumes FastAPI's default Swagger route is enabled. If your application uses a different configuration, replace it with the actual documentation route.
-
-The backend's root URL does not necessarily serve a homepage. Use the application's configured health and API endpoints to verify backend availability.
-
-## The problem
-
-Incident responders often need to answer questions such as:
-
-- Which services are downstream of a failing dependency?
-- What is the potential blast radius of a service failure?
-- Which hypothesis is best supported by the available evidence?
-- What changes when a dependency is removed in an isolated simulation?
-- Can an investigation explain why it reached a conclusion?
-
-These questions depend on **relationships between entities**, not merely on individual records.
-
-TraceForge uses FalkorDB to represent those relationships explicitly and retrieve connected context for incident investigation.
-
-## Key capabilities
-
-### 1. Incident Command Center
-A central workspace for inspecting incident context and navigating the investigation workflow.
-
-### 2. Dependency Explorer
-Explore service relationships and dependency paths to understand how components connect and where failures may propagate.
-
-### 3. Hypothesis & Evidence Lab
-Inspect incident evidence and compare competing explanations. Keep evidence distinct from interpretations so that an attractive hypothesis is not mistaken for a proven cause.
-
-### 4. Graph Surgery Workspace
-Explore counterfactual dependency changes and their potential effect on the graph. Treat results as simulations, not guaranteed production outcomes.
-
-### 5. Safe Recovery Console
-Support recovery decision-making with graph-grounded context and explicit separation between analysis and action.
-
-### 6. Memory & Evidence Debt
-Surface gaps in investigation context and evidence so that uncertainty is visible rather than hidden behind a confident-looking answer.
-
-> Verify each capability against the deployed build before submission. Remove or revise any description that is not supported by the current implementation.
+- **Dependency tracing**: bounded, directed traversal of `DEPENDS_ON` paths between services.
+- **Blast-radius analysis**: finds every downstream service that depends (directly or transitively) on a failing component.
+- **Incident evidence inspection**: aggregates affected services, alerts, correlated metric anomalies (with sigma deviation), candidate deployments, and evidence debt.
+- **Evidence-backed hypothesis ranking**: a deterministic multi-factor scoring engine ranks competing root-cause hypotheses using supporting and contradicting evidence. It can abstain when evidence is insufficient.
+- **Graph surgery (counterfactual simulation)**: apply a hypothetical change to an isolated clone of the graph and compare blast radius and hypothesis rankings against the baseline.
+- **MCP server**: five deterministic investigation tools exposed over the Model Context Protocol so AI agents can query the operational graph.
+- **Optional LLM verification**: Gemini or OpenAI can be configured; without a key, TraceForge falls back to deterministic heuristic scoring and still works.
 
 ## Architecture
 
-<img width="863" height="779" alt="Screenshot 2026-10-18 084053" src="https://github.com/user-attachments/assets/9c11f08a-cd4c-4254-a8be-752297625667" />
-
-TraceForge uses a frontend/backend architecture with FalkorDB as its graph context layer.
-
 ```mermaid
 flowchart TD
-    U[Incident Responder]
-    UI[React + TypeScript + Vite]
-    API[FastAPI Backend]
-    S[Application Services]
-    MCP[MCP Server and Tools]
-    DB[(FalkorDB Cloud)]
-    U --> UI
-    UI --> API
-    API --> S
-    S --> DB
-    MCP --> S
+    UI["React 19 + Vite UI<br/>Incident console, topology, evidence, hypotheses, graph surgery"]
+    API["FastAPI backend<br/>REST routes: health, graph, investigation, surgery, debt, recovery, memory"]
+    MCP["MCP server (stdio)<br/>app/mcp_server.py"]
+    SVC["Shared service layer<br/>app/core/mcp_services.py + ranking engine"]
+    DB[("FalkorDB<br/>Cypher over the operational graph")]
+
+    UI -->|HTTP| API
+    AGENT["AI agents / MCP clients"] -->|stdio| MCP
+    API --> SVC
+    MCP --> SVC
+    SVC --> DB
 ```
 
-### Components
+The REST API and the MCP server are two entry points into the **same** service layer, so a human using the UI and an agent using MCP see consistent results.
 
-| Component | Responsibility |
-|---|---|
-| React, TypeScript, Vite | Incident investigation interface and graph exploration |
-| FastAPI | Backend API and application orchestration |
-| Application services | Investigation logic, evidence retrieval, graph operations and simulation workflows |
-| MCP tools | Structured access to graph-backed investigation capabilities |
-| FalkorDB | Connected service topology, incident context, evidence and graph queries |
-| Render | Backend hosting |
-| Vercel | Frontend hosting |
+## Technology Stack
 
-The frontend communicates with the backend; it should not connect directly to FalkorDB or contain database credentials.
+| Layer | Technology |
+| :--- | :--- |
+| Frontend | React 19, TypeScript, Vite, Tailwind CSS v4 |
+| Backend API | Python 3.11+, FastAPI, Pydantic v2 |
+| Graph database | FalkorDB (`falkordb` Python client over the Redis wire protocol) |
+| Agent integration | Model Context Protocol (`mcp` package, stdio transport) |
+| Optional LLM | Gemini or OpenAI, with deterministic fallback |
+| Containers | Docker, Docker Compose (FalkorDB + backend + Nginx-served frontend) |
+| Deployment | Vercel (frontend), Render (backend) |
 
-## Graph data model
+## How It Works
 
-The graph models a synthetic payment-platform environment called **NexusPay**. Its purpose is to support incident investigation without requiring private production data.
+1. **Investigate**: select an incident. TraceForge pulls its affected services, alerts, correlated metric observations, deployments, applicable runbooks, and similar historical incidents from the graph.
+2. **Trace dependencies**: traverse `DEPENDS_ON` edges upstream (what a service relies on) or downstream (what relies on it).
+3. **Examine evidence**: separate directly observed facts from conclusions inferred through topology. Missing or uncataloged relationships surface as *evidence debt*.
+4. **Compare hypotheses**: candidates are scored on supporting and contradicting evidence, causal paths, and change risk. Rankings are candidates for human review, not proven root causes.
+5. **Simulate an intervention**: run a hypothetical change on an isolated copy of the graph and compare the outcome against the baseline.
 
-The following is a conceptual model. Confirm the actual labels, properties, and relationship names against the seed code before treating it as the exact implemented schema.
+## Graph Data Model
 
-### Entity types
+All of the following is taken from the implementation (`backend/app/db/seed.py`, `queries.py`, `investigation.py`, `surgery.py`, `recovery.py`, `debt.py`).
 
-| Entity | Purpose |
-|---|---|
-| `Service` | An application or infrastructure component |
-| `Incident` | An operational event requiring investigation |
-| `Alert` | A signal associated with an incident or service |
-| `Metric` | An observed measurement or operational signal |
-| `Hypothesis` | A proposed explanation for an incident |
-| `Evidence` | Information supporting or weakening a hypothesis |
-| `Deployment` | A change that may be relevant to an incident |
-| `Runbook` | Operational guidance associated with a service or incident |
-| `Investigation` | The context and progress of an incident investigation |
+### Node labels
 
-### Relationship types
+**Seeded and indexed (12):**
 
-Examples of relationships the graph model may represent include:
+| Label | Key properties |
+| :--- | :--- |
+| `Service` | `id`, `name`, `tier`, `team`, `language`, `repository`, `status`, `created_at` |
+| `Incident` | `id`, `title`, `severity`, `status`, `started_at`, `resolved_at`, `summary` |
+| `Alert` | `id`, `name`, `severity`, `source`, `timestamp`, `description`, `metric_name`, `value` |
+| `Deployment` | `id`, `version`, `commit_sha`, `deployed_at`, `author`, `status`, `environment` |
+| `MetricObservation` | `id`, `metric_name`, `timestamp`, `value`, `baseline`, `deviation_sigma`, `unit` |
+| `Runbook` | `id`, `title`, `version`, `url` |
+| `RunbookStep` | `id`, `step_number`, `action`, `command`, `estimated_time_mins` |
+| `Investigation` | `id`, `status`, `started_at`, `lead_agent`, `ranked_at`, `abstained` |
+| `Hypothesis` | `id`, `statement`, `confidence`, `status`, `title`, `score`, `rank`, `verdict` |
+| `Evidence` | `id`, `type`, `description`, `confidence` |
+| `RecoveryAction` | `id`, `action_type`, `status`, `executed_at` |
+| `Approval` | `id`, `approver`, `role`, `status`, `decided_at` |
 
-- `DEPENDS_ON` — one service depends on another.
-- Incident-to-service relationships — services affected by or associated with an incident.
-- Incident-to-alert relationships — alerts associated with an incident.
-- Hypothesis-to-evidence relationships — evidence relevant to a proposed explanation.
-- Deployment-to-service relationships — changes associated with a service.
-- Service-to-runbook relationships — operational procedures relevant to a component.
+**Written dynamically at runtime:** `RecoveryProposal`, `EvidenceDebt`, `SimulationResult`.
 
-Use the exact relationship types from `backend/app/db/seed.py` and `backend/app/db/queries.py` in the final version.
+### Relationships
 
-### Example topology
+| Relationship | Pattern | Properties |
+| :--- | :--- | :--- |
+| `DEPENDS_ON` | `(:Service)-[:DEPENDS_ON]->(:Service)` | `protocol`, `timeout_ms`, `critical` |
+| `AFFECTS` | `(:Incident)-[:AFFECTS]->(:Service)` | |
+| `PRODUCES_ALERT` | `(:Service)-[:PRODUCES_ALERT]->(:Alert)` | |
+| `CORRELATES_WITH` | `(:Alert)-[:CORRELATES_WITH]->(:MetricObservation)` | |
+| `DEPLOYED_TO` | `(:Deployment)-[:DEPLOYED_TO]->(:Service)` | `strategy` |
+| `APPLIES_TO` | `(:Runbook)-[:APPLIES_TO]->(:Service)` | |
+| `HAS_STEP` | `(:Runbook)-[:HAS_STEP]->(:RunbookStep)` | `sequence` |
+| `INVESTIGATES` | `(:Investigation)-[:INVESTIGATES]->(:Incident)` | |
+| `EXPLORES_HYPOTHESIS` | `(:Investigation)-[:EXPLORES_HYPOTHESIS]->(:Hypothesis)` | |
+| `HAS_EVIDENCE` | `(:Investigation)-[:HAS_EVIDENCE]->(:Evidence)` | |
+| `SUPPORTS` | `(:Hypothesis)-[:SUPPORTS]->(:Evidence)` | `weight` |
+| `CONTRADICTS` | `(:Hypothesis)-[:CONTRADICTS]->(:Evidence)` | `weight` |
+| `RESOLVED_BY` | `(:Incident)-[:RESOLVED_BY]->(:RecoveryAction)` | |
+| `TARGETS` | `(:RecoveryAction \| :RecoveryProposal)-[:TARGETS]->(:Service)` | |
+| `REQUIRES` | `(:RecoveryAction)-[:REQUIRES]->(:Approval)` | |
+| `PROPOSES_RECOVERY` | `(:Incident)-[:PROPOSES_RECOVERY]->(:RecoveryProposal)` | |
+| `HAS_EVIDENCE_DEBT` | `(:Incident)-[:HAS_EVIDENCE_DEBT]->(:EvidenceDebt)` | |
+| `RESULTED_IN` | `(:RecoveryProposal)-[:RESULTED_IN]->(:SimulationResult)` | |
 
-```mermaid
-flowchart LR
-    WEB[checkout-service]
-    PAY[payment-core]
-    DB[(payment-db-cluster)]
-    INC[Incident]
-    E[Evidence]
-    H[Hypothesis]
-    WEB -->|DEPENDS_ON| PAY
-    PAY -->|DEPENDS_ON| DB
-    INC --> PAY
-    INC --> E
-    E --> H
-```
+> **Direction matters.** `DEPENDS_ON` points from the *dependent* (caller) to its *dependency*, e.g. `(checkout-orchestrator)-[:DEPENDS_ON]->(payment-core)`.
+> - **Upstream** (what a service relies on): `(root)-[:DEPENDS_ON*]->(target)`
+> - **Downstream blast radius** (what breaks if it fails): `(dependent)-[:DEPENDS_ON*]->(root)`
 
-This is an illustrative topology, not a claim about the complete live graph.
+### Indexes
 
-## How the agent uses the graph
-
-The investigation workflow is designed around structured tools rather than allowing an AI model to invent arbitrary database operations.
-
-1. **Understand the incident:** identify the incident and relevant entities.
-2. **Retrieve connected context:** follow dependency paths and examine relevant evidence.
-3. **Evaluate explanations:** compare hypotheses against the available context.
-4. **Explore potential impact:** calculate the relevant blast radius.
-5. **Simulate a proposed change:** evaluate an intervention in an isolated simulation context.
-6. **Present an explainable result:** distinguish retrieved facts, inferred explanations, and simulated outcomes.
-
-The graph is valuable because relationships can be traversed directly. Removing the graph layer would remove important dependency reasoning from the investigation workflow.
-
-## MCP tools
-
-TraceForge's MCP implementation is intended to expose structured graph-backed operations to an AI agent.
-
-| Tool | Purpose |
-|---|---|
-| `trace_dependency_path` | Trace relationships between relevant entities |
-| `get_blast_radius` | Inspect the potential impact of a service or dependency |
-| `inspect_incident_evidence` | Retrieve evidence relevant to an investigation |
-| `compare_hypotheses` | Compare candidate explanations |
-| `simulate_graph_intervention` | Explore a graph change in a simulation context |
-
-Tool names and arguments should be checked against `backend/app/mcp_server.py` and `backend/app/core/mcp_services.py`.
-
-**Safety principle:** investigation and simulation should not silently mutate the baseline topology. Clearly identify the assumptions and limitations of counterfactual results.
-
-## Graph queries
-
-TraceForge uses Cypher-style graph queries through FalkorDB. The following examples illustrate the types of traversals the data model supports; validate them against your actual schema before presenting them as application queries.
-
-### 1. Inspect direct service dependencies
+`create_graph_schema_indexes` creates a secondary index on `id` for each of the 12 seeded labels:
 
 ```cypher
-MATCH (s:Service {name: $service_name})-[:DEPENDS_ON]->(dependency)
-RETURN s.name AS service, dependency.name AS dependency
+CREATE INDEX FOR (n:Service) ON (n.id)
+CREATE INDEX FOR (n:Incident) ON (n.id)
+-- ...and the same for Alert, Deployment, MetricObservation, Runbook,
+-- RunbookStep, Evidence, Hypothesis, Investigation, RecoveryAction, Approval
 ```
 
-### 2. Explore a dependency path
+No uniqueness constraints are defined. Idempotent seeding relies on `MERGE` over the indexed `id` property.
+
+### Cypher queries from the implementation
+
+**Upstream dependency traversal** (`backend/app/db/queries.py`, `traverse_dependencies`). Depth is clamped to 1 to 5 in Python and interpolated into the pattern.
 
 ```cypher
-MATCH p = (a:Service {name: $source})
-          -[:DEPENDS_ON*1..5]->
-          (b:Service {name: $target})
-RETURN p
+MATCH path = (root:Service {id: $service_id})-[:DEPENDS_ON*1..{clamped_depth}]->(target:Service)
+UNWIND nodes(path) AS n
+UNWIND relationships(path) AS r
+RETURN collect(DISTINCT {id: n.id, name: n.name, tier: n.tier, team: n.team, status: n.status}) AS nodes,
+       collect(DISTINCT {source: startNode(r).id, target: endNode(r).id,
+                         type: type(r), protocol: r.protocol}) AS edges
+```
+
+**Downstream blast radius** (`backend/app/db/queries.py`, `find_downstream_dependents`):
+
+```cypher
+MATCH path = (dependent:Service)-[:DEPENDS_ON*1..{clamped_depth}]->(root:Service {id: $service_id})
+UNWIND nodes(path) AS n
+UNWIND relationships(path) AS r
+RETURN collect(DISTINCT {id: n.id, name: n.name, tier: n.tier, team: n.team, status: n.status}) AS nodes,
+       collect(DISTINCT {source: startNode(r).id, target: endNode(r).id, type: type(r)}) AS edges
+```
+
+**Candidate deployment correlation** (`backend/app/db/investigation.py`, `build_investigation_context`):
+
+```cypher
+MATCH (d:Deployment)-[r:DEPLOYED_TO]->(s:Service)
+WHERE s.id IN $service_ids
+RETURN d.id AS id, s.id AS service_id, s.name AS service_name,
+       d.version AS version, d.commit_sha AS commit_sha, d.deployed_at AS deployed_at,
+       d.author AS author, d.status AS status, d.environment AS environment,
+       r.strategy AS strategy
+ORDER BY d.deployed_at DESC
 LIMIT 20
 ```
 
-### 3. Inspect incident-linked evidence
+**Incident telemetry** (`backend/app/db/investigation.py`, `get_incident_alerts_and_metrics`), shortened here to its traversal shape; the full query also projects each property:
 
 ```cypher
-MATCH (i:Incident {id: $incident_id})-[r]-(related)
-RETURN type(r) AS relationship, labels(related) AS entity_types, related
-LIMIT 50
+MATCH (inc:Incident {id: $incident_id})
+OPTIONAL MATCH (inc)-[:AFFECTS]->(s:Service)
+OPTIONAL MATCH (s)-[:PRODUCES_ALERT]->(a:Alert)
+OPTIONAL MATCH (a)-[:CORRELATES_WITH]->(m:MetricObservation)
+RETURN inc, collect(DISTINCT s) AS services,
+       collect(DISTINCT a) AS alerts, collect(DISTINCT m) AS metrics
 ```
 
-These are illustrative patterns, not verified copies of TraceForge's production queries. Adapt labels, properties, relationship direction, and parameters to the actual graph model.
+## Graph Surgery: How Simulation Works
 
-## Technology stack
+Implemented in `backend/app/db/surgery.py`. Supported actions:
 
-- **Frontend:** React, TypeScript, Vite
-- **Backend:** Python, FastAPI
-- **Graph database:** FalkorDB
-- **Agent interoperability:** Model Context Protocol (MCP)
-- **Frontend deployment:** Vercel
-- **Backend deployment:** Render
+| Action | Effect on the cloned graph |
+| :--- | :--- |
+| `remove_dependency` | Deletes a directed `(Service)-[:DEPENDS_ON]->(Service)` edge |
+| `isolate_service` | Deletes all incoming and outgoing `DEPENDS_ON` edges of a service |
+| `rollback_deployment` | Deletes the `(Deployment)-[:DEPLOYED_TO]->(Service)` edge |
+| `remove_evidence` | `DETACH DELETE`s an `Evidence` node to test how stable a hypothesis is without it |
 
-Add any additional libraries, AI model providers, or visualization libraries only if they are actually used in the submitted code.
+Execution path:
 
-## Getting started locally
+1. The baseline graph is copied to a temporary graph with FalkorDB's native copy (`traceforge_exp_<id>`).
+2. The deletion runs **only on the copy**; the baseline graph is never mutated.
+3. The same ranking engine runs on both graphs, and TraceForge reports the diffs: score deltas, factor contribution shifts, blast-radius change, and whether the causal path is severed.
+4. The temporary graph is deleted afterwards (`exp_graph.delete()`) unless `preserve_experiment_graph=True` is requested. A guard prevents the baseline graph from ever being deleted.
 
-### Prerequisites
+> **Safety boundary:** simulations run against a copy of the graph data inside FalkorDB. They do not change the baseline graph and do not execute anything against real infrastructure. Results describe the supplied graph and evidence, not a verified outcome in a live system.
 
-- Git
-- Node.js and npm
-- Python compatible with the project's dependency files
-- Access to a FalkorDB instance
-- Any additional provider credentials required by your implementation
+## MCP Server
 
-### 1. Clone the repository
+TraceForge ships an MCP server (`backend/app/mcp_server.py`, stdio transport) that exposes five tools backed by the same service layer as the REST API:
+
+| Tool | Parameters | What it does |
+| :--- | :--- | :--- |
+| `trace_dependency_path` | `source_service_id`, `target_service_id`, `max_depth=3` | Finds the directed dependency path between two services (depth 1 to 5) |
+| `get_blast_radius` | `service_id`, `max_depth=3` | Computes downstream services affected if the given service fails |
+| `inspect_incident_evidence` | `incident_id`, `max_depth=3` | Returns correlated alerts, metric anomalies, deployments, and evidence debt |
+| `compare_hypotheses` | `incident_id`, `max_depth=3` | Ranks competing root-cause hypotheses with deterministic multi-factor scoring |
+| `simulate_graph_intervention` | `incident_id`, `action_type`, `source_id`, `target_id` (optional), `relationship_type`, `justification` | Runs graph surgery on an isolated clone and returns causal-shift and blast-radius diffs |
+
+Run it from the repository root (after the backend setup below):
 
 ```bash
-git clone <YOUR_PUBLIC_GITHUB_REPOSITORY_URL>
-cd SessionSmith
+# macOS / Linux
+export PYTHONPATH="backend"
+python3 -m app.mcp_server
 ```
-
-Replace the placeholder with the public repository URL.
-
-### 2. Configure the backend
-
-Create a virtual environment:
 
 ```powershell
-cd F:\SessionSmith
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
+# Windows PowerShell
+$env:PYTHONPATH = "backend"
+python -m app.mcp_server
 ```
 
-Install the backend dependencies using the dependency file present in your repository. For example, if the backend has its own `requirements.txt`:
+See [`docs/MCP_SERVER.md`](docs/MCP_SERVER.md) for client configuration details and the agent guide.
 
-```powershell
-pip install -r backend\requirements.txt
-```
+## Demo Dataset
 
-If the dependency file is located elsewhere, use its actual path.
+The seeded dataset is a **synthetic** operational graph for a fictional payments company, **NexusPay**:
 
-Copy `.env.example` to `.env` and fill in the values locally:
-
-```env
-FALKORDB_HOST=<your-falkordb-host>
-FALKORDB_PORT=<your-falkordb-port>
-FALKORDB_GRAPH_NAME=traceforge
-FALKORDB_USERNAME=<your-username>
-FALKORDB_PASSWORD=<your-password>
-FALKORDB_SSL=false
-```
-
-The values above are examples based on the current development setup. Use the connection parameters provided by your own FalkorDB instance.
-
-**Never commit `.env` or publish database credentials.** Keep `.env.example` populated with placeholders only.
-
-### 3. Initialize the graph
-
-Inspect the seed implementation and its instructions before running it. Confirm that the operation is safe and that it targets the intended graph.
-
-Run the seed command documented by the project. Do not assume a particular entry point without checking `backend/app/db/seed.py` and the repository's setup instructions.
-
-After seeding, verify that expected entities and relationships exist.
-
-### 4. Start the backend
-
-Set the backend import path if your application requires it:
-
-```powershell
-$env:PYTHONPATH = "F:\SessionSmith\backend"
-```
-
-Start FastAPI using the actual application entry point configured in your repository. For example, if the ASGI application is `app.main:app`:
-
-```powershell
-uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
-```
-
-Replace `app.main:app` if your actual module or application variable differs.
-
-### 5. Start the frontend
-
-Open another terminal and navigate to the frontend directory containing `package.json`.
-
-```bash
-npm install
-```
-
-Create the frontend environment file required by the application and configure its API base URL. Use the exact environment variable name expected by the source code.
-
-Then run:
-
-```bash
-npm run dev
-```
-
-Vite will display the local development URL in the terminal.
-
-### 6. Verify the application
-
-- Open the frontend.
-- Confirm that the backend is reachable.
-- Confirm that the graph has been seeded.
-- Open an incident and inspect its connected context.
-- Test dependency traversal and evidence retrieval.
-- Test hypothesis comparison and graph simulation.
-- Check browser and backend logs for errors.
-
-## Testing
-
-Run the test commands supported by the repository.
-
-For example, if the backend uses pytest:
-
-```powershell
-$env:PYTHONPATH = "F:\SessionSmith\backend"
-python -m pytest backend\tests -q
-```
-
-If the frontend defines test, type-check, or build scripts, run those too:
-
-```bash
-npm run build
-```
-
-Only report test counts or coverage numbers that you have actually measured.
+- 20 microservices across 5 tiers (edge, core, internal workers, storage/infra, external gateways) with 20 `DEPENDS_ON` edges
+- 4 deployments, including the true culprit `DEP-4012` on `payment-core` and a misleading red-herring canary `DEP-4011` on `auth-service`
+- 3 scenarios: active SEV1 `INC-2026-8821`, historical resolved SEV2 `INC-2026-7104`, and a sparse low-evidence SEV3 `INC-2026-9043`
+- Metric anomalies (for example a connection pool at 100/100 with a 5.8 sigma deviation), runbooks with concrete steps, and approval records
+- An intentionally missing edge, `risk-scoring-engine -> merchant-config-service`, to simulate uncataloged dependency debt
 
 ## Screenshots
 
-Create this directory in the repository:
+| Incident Command Center | Dependency Explorer |
+| :--- | :--- |
+| ![Incident Command Center](<img width="7680" height="4320" alt="trace-forge-seven vercel app_(High Res)" src="https://github.com/user-attachments/assets/9833f1a5-8edc-438f-84b3-46de4aec6fe7" />
+) | ![Dependency Explorer](<img width="7680" height="4320" alt="trace-forge-seven vercel app_(High Res) (1)" src="https://github.com/user-attachments/assets/da463d49-e333-4fef-80a3-d58047c96af7" />
+) |
+| **Evidence & Hypotheses** | **Graph Surgery** |
+| ![Evidence and Hypotheses](<img width="7660" height="5128" alt="trace-forge-seven vercel app_(High Res) (5)" src="https://github.com/user-attachments/assets/8bdbd27a-0322-4e89-b3ed-64f428d96a60" />
+) | ![Graph Surgery](<img width="7660" height="6680" alt="trace-forge-seven vercel app_(High Res) (3)" src="https://github.com/user-attachments/assets/ad9f4696-c846-48c9-88cf-4d4b4a0c7ef9" />
+) |
+| **Agent Trace (MCP)** | **Data Model** |
+| ![Agent-Trace(MCP)](<img width="7660" height="5600" alt="trace-forge-seven vercel app_(High Res) (4)" src="https://github.com/user-attachments/assets/1b9619f7-6b3d-4349-9131-6c03f15e4f47" />
+) | ![Data-Model](<img width="1536" height="1024" alt="TraceForge Graph Data Model Infographic" src="https://github.com/user-attachments/assets/56885f84-b4aa-4455-bd5a-69c7d355c4a4" />
+) |
 
-```text
-docs/
-└── screenshots/
-    ├── traceforge-dashboard.png
-    ├── traceforge-dependency-graph.png
-    ├── traceforge-evidence-lab.png
-    ├── traceforge-graph-surgery.png
-    └── traceforge-architecture.png
+
+## Getting Started
+
+### Prerequisites
+
+| Tool | Requirement |
+| :--- | :--- |
+| Python | 3.11 or newer |
+| Node.js | 20 or newer, with npm |
+| Docker | Optional: Docker Engine 20.10+ / Compose v2 for FalkorDB or the full stack |
+| FalkorDB | Local via Docker, or a hosted FalkorDB Cloud instance |
+
+### Option A: Full stack with Docker Compose
+
+```bash
+git clone https://github.com/rajputpranav611-byte/trace-forge.git
+cd trace-forge
+cp .env.example .env
+
+docker compose up --build
 ```
 
-Capture screenshots of the real running application and save them with these names, or update the image links to match your filenames.
+Compose starts FalkorDB (`6379`, browser UI on `3000`), the FastAPI backend (`8000`), and the frontend served by Nginx (`5173`). Seeding is **not** part of container startup, so load the demo graph once:
 
-Recommended screenshots:
-
-1. **Dashboard:** the incident command center and overall interface.
-2. **Dependency graph:** visible service relationships and a meaningful traversal.
-3. **Evidence lab:** a real incident with evidence and competing hypotheses.
-4. **Graph surgery:** a real simulation, clearly labeled as simulated.
-5. **Architecture:** a diagram showing the frontend, backend, MCP tools, and FalkorDB.
-
-Use Markdown image links such as:
-
-```markdown
-![TraceForge dependency explorer](docs/screenshots/traceforge-dependency-graph.png)
+```bash
+docker exec -it traceforge-backend python -m app.db.seed
 ```
 
-Commit the image files to the public repository so the screenshots render on GitHub. Do not include credentials, private data, or misleading mock results.
+Then open <http://localhost:5173>.
+
+### Option B: Local development
+
+**1. Clone and configure**
+
+```bash
+git clone https://github.com/rajputpranav611-byte/trace-forge.git
+cd trace-forge
+cp .env.example .env        # PowerShell: Copy-Item .env.example .env
+```
+
+**2. Start FalkorDB**
+
+```bash
+docker run --name traceforge-db -d -p 6379:6379 -p 3000:3000 falkordb/falkordb:latest
+```
+
+To use a hosted FalkorDB Cloud instance instead, set `FALKORDB_HOST`, `FALKORDB_PORT`, `FALKORDB_USERNAME`, `FALKORDB_PASSWORD`, and `FALKORDB_SSL=true` in `.env`.
+
+**3. Backend** (run everything from the repository root so `.env` is found)
+
+macOS / Linux:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r backend/requirements.txt
+
+export PYTHONPATH="backend"
+python3 -m app.db.seed                                             # load the NexusPay graph
+python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+Windows PowerShell:
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r backend/requirements.txt
+
+$env:PYTHONPATH = "backend"
+python -m app.db.seed
+python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+`PYTHONPATH=backend` is required; without it Python raises `ModuleNotFoundError: No module named 'app'`.
+
+**4. Frontend** (second terminal)
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Open <http://localhost:5173>. The frontend calls `http://localhost:8000` by default.
+
+**5. Run the tests (optional)**
+
+```bash
+export PYTHONPATH="backend"      # PowerShell: $env:PYTHONPATH = "backend"
+pytest backend/tests -v
+```
+
+### Environment variables
+
+Defined in `backend/app/core/config.py` (backend) and `frontend/src/App.tsx` (frontend). All have defaults; none of the secret values are committed.
+
+| Variable | Used by | Required | Default / example |
+| :--- | :--- | :--- | :--- |
+| `FALKORDB_HOST` | Backend | Yes | `localhost` |
+| `FALKORDB_PORT` | Backend | Yes | `6379` |
+| `FALKORDB_GRAPH_NAME` | Backend | No | `traceforge` |
+| `FALKORDB_USERNAME` | Backend | No | empty (local) |
+| `FALKORDB_PASSWORD` | Backend | No | empty (local) |
+| `FALKORDB_SSL` | Backend | No | `false` |
+| `BACKEND_HOST` | Backend | No | `0.0.0.0` |
+| `BACKEND_PORT` | Backend | No | `8000` |
+| `ENVIRONMENT` | Backend | No | `development` |
+| `CORS_ORIGINS` | Backend | No | `http://localhost:5173,http://localhost:3000` |
+| `LLM_PROVIDER` | Backend | No | `auto` (`gemini`, `openai`, `mock`) |
+| `GEMINI_API_KEY` | Backend | No | empty (falls back to deterministic scoring) |
+| `OPENAI_API_KEY` | Backend | No | empty (falls back to deterministic scoring) |
+| `LLM_MODEL` | Backend | No | `gemini-1.5-flash` |
+| `LLM_TIMEOUT_SECONDS` | Backend | No | `8.0` |
+| `VITE_API_BASE_URL` | Frontend | No | `http://localhost:8000` |
+
+To point the frontend at a different backend, create `frontend/.env` with `VITE_API_BASE_URL=<backend url>`.
+
+## Project Structure
+
+```
+trace-forge/
+├── backend/
+│   ├── Dockerfile
+│   ├── requirements.txt
+│   ├── app/
+│   │   ├── main.py              # FastAPI app and DB lifespan
+│   │   ├── mcp_server.py        # MCP stdio server (5 tools)
+│   │   ├── api/routes/          # REST routes
+│   │   ├── core/                # config, shared services, ranking engine, LLM verifier
+│   │   ├── db/                  # client, queries, seed, investigation, surgery, debt, recovery, memory
+│   │   └── schemas/             # Pydantic v2 schemas
+│   └── tests/                   # pytest suite
+├── frontend/                    # React 19 + Vite + Tailwind CSS v4
+├── docs/
+│   └── MCP_SERVER.md
+├── docker-compose.yml
+├── .env.example
+└── README.md
+```
 
 ## Deployment
 
-### Frontend — Vercel
+- Frontend (Vercel): <https://trace-forge-seven.vercel.app/>
+- Backend (Render): <https://traceforge-backend-6rtl.onrender.com/>
+- Source: <https://github.com/rajputpranav611-byte/trace-forge>
 
-Live URL: https://trace-forge-seven.vercel.app
+The backend is an API service, so its bare root URL is not a web page. The deployments are separate, and the live demo depends on the backend and its FalkorDB connection being available.
 
-Configure the frontend project root, build command, and production API URL according to the repository's structure. Only expose public frontend configuration through Vite environment variables; never include database passwords or server-only secrets.
+## Responsible Use and Limitations
 
-### Backend — Render
+- TraceForge supports investigation; it does not guarantee a correct root-cause diagnosis.
+- Hypothesis rankings are candidates for human review, not proof of causality.
+- Results depend on the completeness of the topology and evidence in the graph, and uncataloged dependencies will not appear in blast-radius results.
+- The demo uses synthetic scenario data, not live production telemetry.
+- Simulations modify only a temporary copy of the graph; they are not real infrastructure changes.
+- Validate any operational change through normal engineering review and production safeguards.
 
-Live URL: https://traceforge-backend-6rtl.onrender.com
+## Hackathon
 
-Configure the correct Python environment, dependency installation command, ASGI entry point, and Render port binding. Set FalkorDB credentials and other server-only secrets in Render's environment settings.
+**Event:** WeMakeDevs × FalkorDB Graph Hacks 2026, *Context for AI Agents*
+**Track:** Track 01, Agents That Act on Connected Data
 
-Verify the health endpoint, a real graph-backed API request, frontend-to-backend communication, and CORS configuration after deployment.
+TraceForge explores how a graph database gives AI-assisted operational investigations structured context, traceable relationships, and inspectable evidence.
 
-### Graph database — FalkorDB Cloud
+## AI Assistance Disclosure
 
-The hosted graph stores the connected context used by the backend. Configure the database connection only in trusted backend environments. Do not connect the browser frontend directly to the database.
+AI coding assistants were used during development to support implementation, debugging, and documentation. The project should be evaluated against the source code and the working demo. The author remains responsible for understanding, validating, and explaining the submitted implementation.
 
-## Security and limitations
+## Acknowledgements
 
-- Use public, synthetic, or otherwise authorized data.
-- Keep database credentials and provider API keys out of Git.
-- Validate tool inputs and restrict graph operations to intended capabilities.
-- Separate read-only investigation from controlled graph modifications.
-- Isolate graph simulations from the baseline data.
-- Do not present hypotheses as confirmed root causes without supporting evidence.
-- Do not treat simulated outcomes as guaranteed production results.
-- Document any limitations of the hosted environment or model-generated conclusions.
-
-## Hackathon information
-
-**Event:** WeMakeDevs × FalkorDB — Graph Hacks: Context for AI Agents  
-**Track:** Track 01 — Agents That Act on Connected Data  
-**Project:** TraceForge
-
-The project uses FalkorDB as the graph context layer for connected-data investigation and graph-backed agent tools.
-
-Official rules: https://www.wemakedevs.org/hackathons/falkordb/rules
-
-## Demo video
-
-**Watch the demo:** `https://youtu.be/-Kc4a8znFeQ`
-
-The video should demonstrate the working deployed product, the role of FalkorDB, actual agent tool usage, a meaningful dependency investigation, and the graph-surgery workflow.
-
-## AI-assisted development disclosure
-
-AI coding assistants were used as development aids for selected implementation, debugging, documentation, and workflow tasks. The project author is responsible for reviewing, testing, understanding, and explaining the submitted code and architecture.
-
-Adjust this statement to accurately describe the tools used and your own contributions.
-
-## Future improvements
-
-Potential directions include:
-
-- Richer provenance linking conclusions to their source evidence
-- More incident scenarios and evaluation cases
-- Stronger validation of graph interventions
-- Investigation history and reproducible simulation comparisons
-- More extensive automated tests and reliability evaluation
-
-## License
-
-Add a license that reflects the permissions you intend to grant. Do not claim an open-source license unless the corresponding license file is included in the repository.
-
+Thanks to the FalkorDB and WeMakeDevs communities for creating a space to explore graph-powered AI applications.
