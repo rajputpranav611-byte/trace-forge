@@ -239,17 +239,11 @@ The seeded dataset is a **synthetic** operational graph for a fictional payments
 
 | Incident Command Center | Dependency Explorer |
 | :--- | :--- |
-| (<img width="7680" height="4320" alt="trace-forge-seven vercel app_(High Res)" src="https://github.com/user-attachments/assets/9833f1a5-8edc-438f-84b3-46de4aec6fe7" />) 
-| (<img width="7680" height="4320" alt="trace-forge-seven vercel app_(High Res) (1)" src="https://github.com/user-attachments/assets/da463d49-e333-4fef-80a3-d58047c96af7" />) 
-|
+| (<img width="7680" height="4320" alt="trace-forge-seven vercel app_(High Res)" src="https://github.com/user-attachments/assets/9833f1a5-8edc-438f-84b3-46de4aec6fe7" />) | (<img width="7680" height="4320" alt="trace-forge-seven vercel app_(High Res) (1)" src="https://github.com/user-attachments/assets/da463d49-e333-4fef-80a3-d58047c96af7" />) |
 | **Evidence & Hypotheses** | **Graph Surgery** |
-| (<img width="7660" height="5128" alt="trace-forge-seven vercel app_(High Res) (5)" src="https://github.com/user-attachments/assets/8bdbd27a-0322-4e89-b3ed-64f428d96a60" />)
-| (<img width="7660" height="6680" alt="trace-forge-seven vercel app_(High Res) (3)" src="https://github.com/user-attachments/assets/ad9f4696-c846-48c9-88cf-4d4b4a0c7ef9" />)
-|
+| (<img width="7660" height="5128" alt="trace-forge-seven vercel app_(High Res) (5)" src="https://github.com/user-attachments/assets/8bdbd27a-0322-4e89-b3ed-64f428d96a60" />) | (<img width="7660" height="6680" alt="trace-forge-seven vercel app_(High Res) (3)" src="https://github.com/user-attachments/assets/ad9f4696-c846-48c9-88cf-4d4b4a0c7ef9" />) |
 | **Agent Trace (MCP)** | **Data Model** |
-|(<img width="7660" height="5600" alt="trace-forge-seven vercel app_(High Res) (4)" src="https://github.com/user-attachments/assets/1b9619f7-6b3d-4349-9131-6c03f15e4f47" />)
-|(<img width="1536" height="1024" alt="TraceForge Graph Data Model Infographic" src="https://github.com/user-attachments/assets/56885f84-b4aa-4455-bd5a-69c7d355c4a4" />) 
-|
+|(<img width="7660" height="5600" alt="trace-forge-seven vercel app_(High Res) (4)" src="https://github.com/user-attachments/assets/1b9619f7-6b3d-4349-9131-6c03f15e4f47" />) | (<img width="1536" height="1024" alt="TraceForge Graph Data Model Infographic" src="https://github.com/user-attachments/assets/56885f84-b4aa-4455-bd5a-69c7d355c4a4" />) |
 
 
 ## Getting Started
