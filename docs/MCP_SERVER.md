@@ -11,7 +11,7 @@ All tools query and operate directly on the live FalkorDB graph (`traceforge`) a
 - **MCP SDK**: Official Python `mcp>=2.3.0` (`mcp.server.mcpserver.MCPServer`).
 - **Transport**: `stdio` transport. All agent communications follow the JSON-RPC standard over standard input/output.
 - **Protocol Hygiene**: Diagnostic logging, query traces, and exceptions are strictly routed to `sys.stderr` via Python's standard `logging` library. `sys.stdout` remains 100% protocol-clean for JSON-RPC messages.
-- **Service Separation**: Core investigation queries and scoring logic are encapsulated in [`backend/app/core/mcp_services.py`](file:///f:/SessionSmith/backend/app/core/mcp_services.py). The MCP server wrapper in [`backend/app/mcp_server.py`](file:///f:/SessionSmith/backend/app/mcp_server.py) and the existing FastAPI REST routes share the exact same underlying logic.
+- **Service Separation**: Core investigation queries and scoring logic are encapsulated in [`backend/app/core/mcp_services.py`](file:///f:/TraceForge/backend/app/core/mcp_services.py). The MCP server wrapper in [`backend/app/mcp_server.py`](file:///f:/TraceForge/backend/app/mcp_server.py) and the existing FastAPI REST routes share the exact same underlying logic.
 
 ---
 
@@ -81,8 +81,8 @@ Ensure FalkorDB is running (e.g. via `docker-compose up -d falkordb` on port 637
 
 ### Windows (PowerShell)
 ```powershell
-$env:PYTHONPATH = "f:\SessionSmith\backend"
-f:\SessionSmith\.venv\Scripts\python.exe -m app.mcp_server
+$env:PYTHONPATH = "f:\TraceForge\backend"
+f:\TraceForge\.venv\Scripts\python.exe -m app.mcp_server
 ```
 
 ### Linux / macOS
@@ -100,10 +100,10 @@ python3 -m app.mcp_server
 {
   "mcpServers": {
     "traceforge": {
-      "command": "f:\\SessionSmith\\.venv\\Scripts\\python.exe",
+      "command": "f:\\TraceForge\\.venv\\Scripts\\python.exe",
       "args": ["-m", "app.mcp_server"],
       "env": {
-        "PYTHONPATH": "f:\\SessionSmith\\backend",
+        "PYTHONPATH": "f:\\TraceForge\\backend",
         "FALKORDB_HOST": "localhost",
         "FALKORDB_PORT": "6379"
       }
@@ -117,10 +117,10 @@ python3 -m app.mcp_server
 {
   "mcpServers": {
     "traceforge": {
-      "command": "f:\\SessionSmith\\.venv\\Scripts\\python.exe",
+      "command": "f:\\TraceForge\\.venv\\Scripts\\python.exe",
       "args": ["-m", "app.mcp_server"],
       "env": {
-        "PYTHONPATH": "f:\\SessionSmith\\backend"
+        "PYTHONPATH": "f:\\TraceForge\\backend"
       }
     }
   }
@@ -131,7 +131,7 @@ python3 -m app.mcp_server
 
 ## 5. Automated Tests
 
-The MCP test suite is located in [`backend/tests/test_mcp_tools.py`](file:///f:/SessionSmith/backend/tests/test_mcp_tools.py).
+The MCP test suite is located in [`backend/tests/test_mcp_tools.py`](file:///f:/TraceForge/backend/tests/test_mcp_tools.py).
 
 Run the tests:
 ```powershell
