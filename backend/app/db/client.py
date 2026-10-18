@@ -15,14 +15,23 @@ class FalkorDBClient:
     def connect(self) -> None:
         settings = get_settings()
         try:
-            self._client = FalkorDB(
-                host=settings.FALKORDB_HOST,
-                port=settings.FALKORDB_PORT,
-            )
+            falkordb_kwargs = {
+                "host": settings.FALKORDB_HOST,
+                "port": settings.FALKORDB_PORT,
+                "ssl": settings.FALKORDB_SSL,
+                "socket_timeout": 10,
+                "socket_connect_timeout": 10,
+            }
+            if settings.FALKORDB_USERNAME:
+                falkordb_kwargs["username"] = settings.FALKORDB_USERNAME
+            if settings.FALKORDB_PASSWORD:
+                falkordb_kwargs["password"] = settings.FALKORDB_PASSWORD
+
+            self._client = FalkorDB(**falkordb_kwargs)
             # Ping connection by retrieving graph instance
             graph = self._client.select_graph(settings.FALKORDB_GRAPH_NAME)
             logger.info(
-                f"Connected to FalkorDB at {settings.FALKORDB_HOST}:{settings.FALKORDB_PORT}, graph: {settings.FALKORDB_GRAPH_NAME}"
+                f"Connected to FalkorDB at {settings.FALKORDB_HOST}:{settings.FALKORDB_PORT}, graph: {settings.FALKORDB_GRAPH_NAME}, ssl: {settings.FALKORDB_SSL}"
             )
         except Exception as exc:
             logger.error(f"Failed to connect to FalkorDB: {exc}")

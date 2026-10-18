@@ -11,6 +11,9 @@ class Settings(BaseSettings):
     FALKORDB_HOST: str = "localhost"
     FALKORDB_PORT: int = 6379
     FALKORDB_GRAPH_NAME: str = "traceforge"
+    FALKORDB_USERNAME: str = ""
+    FALKORDB_PASSWORD: str = ""
+    FALKORDB_SSL: bool = False
 
     # LLM Provider Configuration
     LLM_PROVIDER: str = "auto"  # "gemini", "openai", "mock", or "auto"
